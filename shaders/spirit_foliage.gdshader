@@ -1,6 +1,12 @@
 shader_type canvas_item;
 render_mode unshaded;
 
+varying vec4 sprite_tint;
+
+void vertex() {
+	sprite_tint = COLOR;
+}
+
 uniform bool heat_spirit = true;
 uniform float clock = 0.0;
 uniform float liveliness = 1.0;
@@ -43,5 +49,5 @@ void fragment() {
 	float pinned = max(face_lock, belly_lock);
 	float free_edge = (1.0 - smoothstep(0.80, 0.88, UV.y)) * (1.0 - smoothstep(0.35, 0.70, pinned));
 	vec2 sample_uv = UV + drift * liveliness * free_edge;
-	COLOR = texture(TEXTURE, sample_uv) * COLOR;
+	COLOR = texture(TEXTURE, sample_uv) * sprite_tint;
 }
