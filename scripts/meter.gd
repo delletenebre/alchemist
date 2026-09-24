@@ -3,8 +3,10 @@ extends Control
 
 signal blast_released(overheat: bool)
 
-const HEAT_BODY := preload("res://assets/spirits/heat_body.png")
-const SMOKE_BODY := preload("res://assets/spirits/smoke_body.png")
+const HEAT_BODY := preload("res://assets/spirits/heat_body_inward.png")
+const SMOKE_BODY := preload("res://assets/spirits/smoke_body_inward.png")
+const HEAT_FACES := preload("res://assets/spirits/heat_faces.tres")
+const SMOKE_FACES := preload("res://assets/spirits/smoke_faces.tres")
 const LEAF := preload("res://assets/spirits/leaf.svg")
 const WISP := preload("res://assets/spirits/wisp.svg")
 @onready var motion: Node2D = $Motion
@@ -14,13 +16,7 @@ const WISP := preload("res://assets/spirits/wisp.svg")
 @onready var caption: Label = $Caption
 @onready var threshold_label: Label = $Threshold
 @onready var face: Node2D = $Motion/Visual/Face
-@onready var head: Polygon2D = $Motion/Visual/Face/Head
-@onready var mouth_rim: Line2D = $Motion/Visual/Face/RoundMouth/Rim
-@onready var eyes: Node2D = $Motion/Visual/Face/Eyes
-@onready var brow_left: Line2D = $Motion/Visual/Face/BrowLeft
-@onready var brow_right: Line2D = $Motion/Visual/Face/BrowRight
-@onready var mouth: Node2D = $Motion/Visual/Face/Mouth
-@onready var round_mouth: Polygon2D = $Motion/Visual/Face/RoundMouth
+@onready var artwork: AnimatedSprite2D = $Motion/Visual/Face/Artwork
 @onready var fist: Node2D = $Motion/Visual/FistPivot
 @onready var leaves: Node2D = $Motion/Visual/Leaves
 @onready var puffs: CPUParticles2D = $Motion/Visual/Puffs
@@ -35,6 +31,8 @@ var look_direction := 0.0
 var blast_state: StringName = &""
 var pulse: Tween
 var base_face := Vector2.ZERO
+var face_pose: StringName = &""
+var face_tween: Tween
 
 func _ready() -> void:
 	for leaf in leaves.get_children():
@@ -46,18 +44,13 @@ func configure(label_text: String, value: int, _threshold: int = 6, threshold_te
 	if previous_value < 0 or next_heat != heat_mode:
 		heat_mode = next_heat
 		icon.texture = HEAT_BODY if heat_mode else SMOKE_BODY
-		base_face = Vector2(58, 73) if heat_mode else Vector2(55, 84)
+		base_face = Vector2(65, 72) if heat_mode else Vector2(52, 82)
 		face.position = base_face
-		head.texture = HEAT_BODY if heat_mode else SMOKE_BODY
-		var head_uv := PackedVector2Array()
-		var center := Vector2(525, 655) if heat_mode else Vector2(500, 775)
-		var radius := Vector2(135, 72) if heat_mode else Vector2(110, 70)
-		for point in head.polygon:
-			head_uv.append(center + point / Vector2(25, 17) * radius)
-		head.uv = head_uv
-		for stroke in mouth.get_children():
-			stroke.default_color = Color("ead6a0") if heat_mode else Color("62432e")
-		mouth_rim.default_color = Color("d7c391") if heat_mode else Color("68513a")
+		artwork.sprite_frames = HEAT_FACES if heat_mode else SMOKE_FACES
+		artwork.scale = Vector2(0.087, 0.09) if heat_mode else Vector2(0.077, 0.082)
+		face.skew = -0.06 if heat_mode else 0.06
+		value_label.position.x = 35.0 if heat_mode else 21.0
+		face_pose = &""
 		value_label.position.y = 100.0 if heat_mode else 109.0
 		value_label.add_theme_color_override("font_color", Color("6e301e") if heat_mode else Color("285963"))
 		for i in range(leaves.get_child_count()):
@@ -98,6 +91,22 @@ func _update_expression() -> void:
 	else:
 		expression = &"happy" if (previous_value >= 2 or not heat_mode) else &"calm"
 
+	_show_expression_art()
+
+func _show_expression_art() -> void:
+	# The expression is a complete illustrated paper face, never geometry over the art.
+	var pose := expression
+	if pose == &"sleepy": pose = &"calm"
+	elif pose == &"charge": pose = &"furious"
+	elif pose == &"explode": pose = &"release"
+	if pose == face_pose: return
+	face_pose = pose
+	artwork.animation = pose
+	if face_tween and face_tween.is_running(): face_tween.kill()
+	face.scale = Vector2(1.025, 0.95)
+	face_tween = create_tween()
+	face_tween.tween_property(face, "scale", Vector2.ONE, 0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
 func _process(delta: float) -> void:
 	idle_time += delta
 	offended_time = maxf(0, offended_time - delta)
@@ -111,23 +120,7 @@ func _process(delta: float) -> void:
 	visual.position = Vector2(-56, -145) + Vector2(0, sin(idle_time * rhythm) * (1.0 if heat_mode else 2.0))
 	visual.rotation = (look_direction * 0.045 if angry else 0.0) + sin(idle_time * (19.0 if furious else rhythm)) * (0.032 if furious else 0.012)
 	face.position = base_face + Vector2(0, sin(idle_time * rhythm + 0.2) * 0.5)
-	var left_angle := 0.42 if angry or furious else (-0.30 if sad else -0.10)
-	var right_angle := -left_angle
-	brow_left.rotation = lerp_angle(brow_left.rotation, left_angle, 1 - exp(-delta * 15))
-	brow_right.rotation = lerp_angle(brow_right.rotation, right_angle, 1 - exp(-delta * 15))
-	var eyelid := 0.62 if sad else (1.14 if furious or releasing else 0.9)
-	var blink_phase := fposmod(idle_time + (0.0 if heat_mode else 1.3), 4.6)
-	var blink := 0.12 if blink_phase < 0.11 and not releasing else 1.0
-	eyes.scale.y = lerpf(eyes.scale.y, eyelid * blink, 1 - exp(-delta * 30))
-	for child in eyes.get_children():
-		var pupil := child.get_node("Pupil") as Polygon2D
-		pupil.position.x = lerpf(pupil.position.x, look_direction * 2.0 if offended_time > 0 else (sin(idle_time * 0.6) * 0.8), 1 - exp(-delta * 12))
-	mouth.visible = not releasing
-	round_mouth.visible = releasing
-	var mouth_pose := "Angry" if angry or furious or expression == &"charge" else ("Sad" if sad else "Smile")
-	for stroke in mouth.get_children():
-		stroke.visible = stroke.name == mouth_pose
-	face.rotation = lerp_angle(face.rotation, -0.07 if sad else (look_direction * 0.08 if angry else sin(idle_time * 1.1) * 0.02), 1 - exp(-delta * 8))
+	face.rotation = lerp_angle(face.rotation, (0.13 if heat_mode else -0.10) + (-0.025 if sad else (look_direction * 0.04 if angry else sin(idle_time * 1.1) * 0.02)), 1 - exp(-delta * 8))
 	fist.visible = heat_mode and (angry or furious)
 	if fist.visible:
 		var side := -1.0 if look_direction < 0 and angry else 1.0
