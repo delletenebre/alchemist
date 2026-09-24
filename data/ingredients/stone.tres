@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AlchemyIngredient" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/ingredient_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_03_again_stone.png" id="2"]
+[resource]
+script = ExtResource("1")
+short = "Камень-форточка"
+effect = "+2 жара и −1 дым."
+color = "purple"
+heat = 2
+smoke = -1
+art = ExtResource("2")

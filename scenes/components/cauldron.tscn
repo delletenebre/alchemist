@@ -1,0 +1,136 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/cauldron.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cauldron_body.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/potion_surface.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/fire_flames.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/steam_curls.png" id="5"]
+
+[ext_resource type="Texture2D" path="res://assets/paper_drop.svg" id="6"]
+
+[ext_resource type="Texture2D" path="res://assets/potion_bubble.svg" id="7"]
+[ext_resource type="Texture2D" path="res://assets/potion_ripple.svg" id="8"]
+
+[node name="Cauldron" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Body" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+scale = Vector2(0.115885, 0.115885)
+z_index = 1
+
+[node name="Potion" type="Sprite2D" parent="."]
+texture = ExtResource("3")
+position = Vector2(0, -48)
+scale = Vector2(0.10026, 0.10026)
+z_index = 3
+
+[node name="Fire" type="Sprite2D" parent="."]
+texture = ExtResource("4")
+position = Vector2(0, 43)
+scale = Vector2(0.0761, 0.0761)
+z_index = 4
+
+[node name="Steam" type="Sprite2D" parent="."]
+texture = ExtResource("5")
+position = Vector2(0, -72)
+scale = Vector2(0.055, 0.055)
+modulate = Color(1, 1, 1, 0.78)
+z_index = 5
+
+[node name="DropRim" type="Line2D" parent="."]
+z_index = 4
+width = 2.5
+antialiased = true
+default_color = Color(1, 0.90, 0.57, 1)
+modulate = Color(1, 1, 1, 0)
+points = PackedVector2Array(62.000, -48.000, 61.237, -45.341, 58.966, -42.747, 55.242, -40.282, 50.159, -38.008, 43.841, -35.979, 36.443, -34.247, 28.147, -32.853, 19.159, -31.832, 9.699, -31.209, 0.000, -31.000, -9.699, -31.209, -19.159, -31.832, -28.147, -32.853, -36.443, -34.247, -43.841, -35.979, -50.159, -38.008, -55.242, -40.282, -58.966, -42.747, -61.237, -45.341, -62.000, -48.000, -61.237, -50.659, -58.966, -53.253, -55.242, -55.718, -50.159, -57.992, -43.841, -60.021, -36.443, -61.753, -28.147, -63.147, -19.159, -64.168, -9.699, -64.791, -0.000, -65.000, 9.699, -64.791, 19.159, -64.168, 28.147, -63.147, 36.443, -61.753, 43.841, -60.021, 50.159, -57.992, 55.242, -55.718, 58.966, -53.253, 61.237, -50.659, 62.000, -48.000)
+
+[node name="Splash" type="CPUParticles2D" parent="."]
+z_index = 7
+position = Vector2(0, -48)
+emitting = false
+amount = 16
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+randomness = 0.25
+texture = ExtResource("6")
+emission_shape = 1
+emission_sphere_radius = 24.0
+direction = Vector2(0, -1)
+spread = 58.0
+gravity = Vector2(0, 300)
+initial_velocity_min = 80.0
+initial_velocity_max = 150.0
+angular_velocity_min = -140.0
+angular_velocity_max = 140.0
+scale_amount_min = 0.2
+scale_amount_max = 0.45
+color = Color(0.65, 0.93, 0.31, 1)
+
+[node name="Boiling" type="Node2D" parent="."]
+z_index = 4
+
+[node name="Bubble0" type="Sprite2D" parent="Boiling"]
+position = Vector2(-40, -47)
+texture = ExtResource("7")
+scale = Vector2(0.25, 0.25)
+
+[node name="Bubble1" type="Sprite2D" parent="Boiling"]
+position = Vector2(-22, -54)
+texture = ExtResource("7")
+scale = Vector2(0.25, 0.25)
+
+[node name="Bubble2" type="Sprite2D" parent="Boiling"]
+position = Vector2(-3, -43)
+texture = ExtResource("7")
+scale = Vector2(0.25, 0.25)
+
+[node name="Bubble3" type="Sprite2D" parent="Boiling"]
+position = Vector2(17, -54)
+texture = ExtResource("7")
+scale = Vector2(0.25, 0.25)
+
+[node name="Bubble4" type="Sprite2D" parent="Boiling"]
+position = Vector2(37, -46)
+texture = ExtResource("7")
+scale = Vector2(0.25, 0.25)
+
+[node name="Bubble5" type="Sprite2D" parent="Boiling"]
+position = Vector2(12, -36)
+texture = ExtResource("7")
+scale = Vector2(0.25, 0.25)
+
+[node name="Ripples" type="Node2D" parent="."]
+z_index = 4
+
+[node name="Ripple0" type="Sprite2D" parent="Ripples"]
+position = Vector2(-40, -47)
+texture = ExtResource("8")
+modulate = Color(1, 1, 1, 0)
+
+[node name="Ripple1" type="Sprite2D" parent="Ripples"]
+position = Vector2(-22, -54)
+texture = ExtResource("8")
+modulate = Color(1, 1, 1, 0)
+
+[node name="Ripple2" type="Sprite2D" parent="Ripples"]
+position = Vector2(-3, -43)
+texture = ExtResource("8")
+modulate = Color(1, 1, 1, 0)
+
+[node name="Ripple3" type="Sprite2D" parent="Ripples"]
+position = Vector2(17, -54)
+texture = ExtResource("8")
+modulate = Color(1, 1, 1, 0)
+
+[node name="Ripple4" type="Sprite2D" parent="Ripples"]
+position = Vector2(37, -46)
+texture = ExtResource("8")
+modulate = Color(1, 1, 1, 0)
+
+[node name="Ripple5" type="Sprite2D" parent="Ripples"]
+position = Vector2(12, -36)
+texture = ExtResource("8")
+modulate = Color(1, 1, 1, 0)

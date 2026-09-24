@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AlchemyIngredient" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/ingredient_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_01_fireleaf_bully.png" id="2"]
+[resource]
+script = ExtResource("1")
+short = "Огнелист-задира"
+effect = "+2 жара."
+color = "red"
+heat = 2
+smoke = 0
+art = ExtResource("2")

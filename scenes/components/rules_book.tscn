@@ -1,0 +1,82 @@
+[gd_scene load_steps=8 format=3]
+[ext_resource type="FontFile" path="res://assets/Georgia-Bold.ttf" id="1"]
+[ext_resource type="FontFile" path="res://assets/Georgia.ttf" id="2"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_frame_paper.png" id="3"]
+[ext_resource type="Shader" path="res://shaders/card_frame.gdshader" id="4"]
+[sub_resource type="ShaderMaterial" id="PaperMask"]
+shader = ExtResource("4")
+shader_parameter/family_tint = Color(0.29, 0.48, 0.39, 1)
+[sub_resource type="StyleBoxFlat" id="Button"]
+bg_color = Color(0.25, 0.46, 0.36, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+[sub_resource type="StyleBoxEmpty" id="Empty"]
+[node name="RulesBook" type="Control"]
+visible = false
+z_index = 150
+size = Vector2(390, 844)
+mouse_filter = 0
+[node name="Shade" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.025, 0.075, 0.065, 0.88)
+mouse_filter = 2
+[node name="Page" type="Control" parent="."]
+position = Vector2(20, 145)
+size = Vector2(350, 600)
+mouse_filter = 2
+[node name="Paper" type="TextureRect" parent="Page"]
+offset_right = 350.0
+offset_bottom = 600.0
+texture = ExtResource("3")
+material = SubResource("PaperMask")
+expand_mode = 1
+mouse_filter = 2
+[node name="Title" type="Label" parent="Page"]
+offset_left = 46.0
+offset_top = 49.0
+offset_right = 304.0
+offset_bottom = 82.0
+theme_override_fonts/font = ExtResource("1")
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.30, 0.19, 0.11, 1)
+text = "Как играть"
+horizontal_alignment = 1
+mouse_filter = 2
+[node name="Body" type="RichTextLabel" parent="Page"]
+offset_left = 46.0
+offset_top = 104.0
+offset_right = 304.0
+offset_bottom = 486.0
+theme_override_fonts/normal_font = ExtResource("2")
+theme_override_fonts/bold_font = ExtResource("1")
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 18
+theme_override_colors/default_color = Color(0.25, 0.16, 0.10, 1)
+bbcode_enabled = true
+text = "[b]1.[/b] Сыграй одну карту в котёл.
+
+[b]2.[/b] Огонь добавляет [b]+1 жар[/b].
+
+[b]3.[/b] Жар [b]6+[/b]? Перегрев: [b]3 урона себе[/b].
+
+[b]4.[/b] Иначе дым [b]3+[/b]? Удар самому здоровому сопернику. [b]Урон = жар.[/b]
+
+После взрыва жар и дым = 0.
+Добери карту до шести.
+
+Красный обод — кому достанется удар. Золотой обод — чей ход."
+[node name="Close" type="Button" parent="Page"]
+offset_left = 88.0
+offset_top = 509.0
+offset_right = 262.0
+offset_bottom = 551.0
+theme_override_fonts/font = ExtResource("1")
+theme_override_font_sizes/font_size = 19
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/hover = SubResource("Button")
+theme_override_styles/pressed = SubResource("Button")
+text = "Понятно"
+focus_mode = 0

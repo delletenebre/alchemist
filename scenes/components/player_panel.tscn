@@ -1,0 +1,102 @@
+[gd_scene load_steps=10 format=3]
+[ext_resource type="Script" path="res://scripts/actor_panel.gd" id="1"]
+[ext_resource type="FontFile" path="res://assets/Georgia-Bold.ttf" id="2"]
+[ext_resource type="Texture2D" path="res://assets/portrait_mount.svg" id="3"]
+[ext_resource type="Texture2D" path="res://assets/portrait_target.svg" id="4"]
+[ext_resource type="Texture2D" path="res://assets/portrait_turn_ring.svg" id="5"]
+[ext_resource type="Texture2D" path="res://assets/portrait_ribbon.svg" id="6"]
+[ext_resource type="Shader" path="res://shaders/portrait_mask.gdshader" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/components/turn_aura.tscn" id="8"]
+[sub_resource type="ShaderMaterial" id="Mask"]
+shader = ExtResource("7")
+[node name="ActorPanel" type="Control"]
+size = Vector2(164, 64)
+mouse_filter = 2
+script = ExtResource("1")
+portrait_center = Vector2(32, 31)
+[node name="Visual" type="Control" parent="."]
+size = Vector2(164, 64)
+pivot_offset = Vector2(82.0, 32.0)
+mouse_filter = 2
+
+[node name="TurnAura" parent="Visual" instance=ExtResource("8")]
+scale = Vector2(0.5714, 0.5714)
+position = Vector2(0, -1)
+
+[node name="Mount" type="TextureRect" parent="Visual"]
+offset_left = 0.0
+offset_top = -1.0
+offset_right = 64.0
+offset_bottom = 63.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+texture = ExtResource("3")
+
+[node name="Portrait" type="TextureRect" parent="Visual"]
+offset_left = 4.0
+offset_top = 3.0
+offset_right = 60.0
+offset_bottom = 59.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+material = SubResource("Mask")
+
+[node name="TurnRing" type="TextureRect" parent="Visual"]
+offset_left = 0.0
+offset_top = -1.0
+offset_right = 64.0
+offset_bottom = 63.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+texture = ExtResource("5")
+visible = false
+
+[node name="TargetRing" type="TextureRect" parent="Visual"]
+offset_left = 0.0
+offset_top = -1.0
+offset_right = 64.0
+offset_bottom = 63.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+texture = ExtResource("4")
+visible = false
+
+[node name="Ribbon" type="TextureRect" parent="Visual"]
+offset_left = 49.0
+offset_top = 1.0
+offset_right = 164.0
+offset_bottom = 64.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+texture = ExtResource("6")
+
+[node name="Name" type="Label" parent="Visual"]
+offset_left = 69.0
+offset_top = 7.0
+offset_right = 156.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.28, 0.18, 0.12, 1)
+text = "Ты"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HP" type="Label" parent="Visual"]
+offset_left = 68.0
+offset_top = 27.0
+offset_right = 156.0
+offset_bottom = 60.0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.63, 0.22, 0.17, 1)
+text = "♥ 12"
+horizontal_alignment = 1
+vertical_alignment = 1

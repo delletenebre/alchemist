@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Texture2D" path="res://assets/portrait_turn_glow.svg" id="1"]
+[ext_resource type="Texture2D" path="res://assets/paper_firefly.svg" id="2"]
+[node name="TurnAura" type="Node2D"]
+visible = false
+[node name="Glow" type="Sprite2D" parent="."]
+position = Vector2(56, 56)
+texture = ExtResource("1")
+[node name="Fly0" type="Sprite2D" parent="."]
+position = Vector2(56, 0)
+texture = ExtResource("2")
+scale = Vector2(0.6, 0.6)
+[node name="Fly1" type="Sprite2D" parent="."]
+position = Vector2(56, 0)
+texture = ExtResource("2")
+scale = Vector2(0.6, 0.6)
+[node name="Fly2" type="Sprite2D" parent="."]
+position = Vector2(56, 0)
+texture = ExtResource("2")
+scale = Vector2(0.6, 0.6)
+[node name="Fly3" type="Sprite2D" parent="."]
+position = Vector2(56, 0)
+texture = ExtResource("2")
+scale = Vector2(0.6, 0.6)
+[node name="Fly4" type="Sprite2D" parent="."]
+position = Vector2(56, 0)
+texture = ExtResource("2")
+scale = Vector2(0.6, 0.6)

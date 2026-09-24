@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AlchemyIngredient" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/ingredient_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_08_granny_salt.png" id="2"]
+[resource]
+script = ExtResource("1")
+short = "Соль Снежной Бабки"
+effect = "−1 жар и −1 дым."
+color = "blue"
+heat = -1
+smoke = -1
+art = ExtResource("2")

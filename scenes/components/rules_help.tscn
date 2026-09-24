@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Texture2D" path="res://assets/portrait_mount.svg" id="1"]
+[ext_resource type="FontFile" path="res://assets/Georgia-Bold.ttf" id="2"]
+[sub_resource type="StyleBoxTexture" id="Paper"]
+texture = ExtResource("1")
+[node name="RulesHelp" type="Button"]
+offset_right = 36.0
+offset_bottom = 36.0
+text = "?"
+focus_mode = 0
+tooltip_text = "Как играть"
+theme_override_styles/normal = SubResource("Paper")
+theme_override_styles/hover = SubResource("Paper")
+theme_override_styles/pressed = SubResource("Paper")
+theme_override_styles/disabled = SubResource("Paper")
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 21
+theme_override_colors/font_color = Color(1, 0.91, 0.67, 1)

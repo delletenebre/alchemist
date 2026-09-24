@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AlchemyIngredient" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/ingredient_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cards/card_05_coal_fruit.png" id="2"]
+[resource]
+script = ExtResource("1")
+short = "Плод-недотуша"
+effect = "+3 жара."
+color = "red"
+heat = 3
+smoke = 0
+art = ExtResource("2")
