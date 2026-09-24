@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 [ext_resource type="Script" path="res://scripts/meter.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/Georgia-Bold.ttf" id="2"]
 [ext_resource type="Texture2D" path="res://assets/spirits/heat_body_inward.png" id="3"]
@@ -8,6 +8,13 @@
 [ext_resource type="Texture2D" path="res://assets/spirits/wisp.svg" id="7"]
 [ext_resource type="Texture2D" path="res://assets/paper_firefly.svg" id="8"]
 [ext_resource type="SpriteFrames" path="res://assets/spirits/heat_faces.tres" id="9"]
+[ext_resource type="Shader" path="res://shaders/spirit_foliage.gdshader" id="10"]
+[sub_resource type="ShaderMaterial" id="Foliage"]
+resource_local_to_scene = true
+shader = ExtResource("10")
+shader_parameter/heat_spirit = true
+shader_parameter/clock = 0.0
+shader_parameter/liveliness = 1.0
 [sub_resource type="Gradient" id="DustFade"]
 colors = PackedColorArray(1, 1, 1, 0.8, 1, 1, 1, 0)
 [node name="Meter" type="Control"]
@@ -15,9 +22,9 @@ size = Vector2(112, 214)
 mouse_filter = 2
 script = ExtResource("1")
 [node name="Motion" type="Node2D" parent="."]
-position = Vector2(56, 145)
+position = Vector2(56, 157)
 [node name="Visual" type="Node2D" parent="Motion"]
-position = Vector2(-56, -145)
+position = Vector2(-56, -157)
 [node name="Leaves" type="Node2D" parent="Motion/Visual"]
 [node name="Leaf0" type="Sprite2D" parent="Motion/Visual/Leaves"]
 position = Vector2(-1, 65)
@@ -45,6 +52,7 @@ rotation = -0.7
 scale = Vector2(0.28, 0.28)
 texture = ExtResource("4")
 [node name="Body" type="TextureRect" parent="Motion/Visual"]
+material = SubResource("Foliage")
 offset_right = 112.0
 offset_bottom = 168.0
 texture = ExtResource("3")
@@ -58,7 +66,7 @@ skew = -0.06
 [node name="Artwork" type="AnimatedSprite2D" parent="Motion/Visual/Face"]
 scale = Vector2(0.087, 0.09)
 sprite_frames = ExtResource("9")
-animation = &"calm"
+animation = &"sly"
 [node name="FistPivot" type="Node2D" parent="Motion/Visual"]
 position = Vector2(87, 91)
 visible = false

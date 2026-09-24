@@ -14,7 +14,13 @@ func _run() -> void:
 	var launches: Array[int] = [0,0]
 	heat.blast_released.connect(func(_overheat: bool) -> void: launches[0] += 1)
 	smoke.blast_released.connect(func(_overheat: bool) -> void: launches[1] += 1)
-	assert(smoke.expression == &"sad")
+	assert(smoke.expression == &"sleepy" and smoke.face_pose == &"sleepy")
+	assert(heat.expression == &"sly")
+	assert(heat.foliage_material != smoke.foliage_material, 'Spirits need independent motion materials')
+	process_frame.connect(func() -> void:
+		assert(heat.expression not in [&"sad", &"sleepy"], 'Heat never becomes sad or sleepy')
+		assert(smoke.face_pose not in [&"angry", &"furious"], 'Smoke stays kind even during a blast')
+	)
 	# A cooling card at zero must react to its negative intent, despite clamping.
 	game._resolve_reaction(AlchemyRules.resolve(0,0,game.cards[4]),4,game.active_player)
 	await create_timer(.1).timeout
@@ -32,15 +38,30 @@ func _run() -> void:
 	assert(smoke.expression == &"happy")
 	smoke.ingredient_delta(-1,game.self_panel.card_origin())
 	await create_timer(.05).timeout
-	assert(smoke.expression == &"sad")
+	assert(smoke.expression == &"concerned")
 	await create_timer(1.9).timeout
 	assert(smoke.expression == &"happy")
+	# Taking from empty smoke gives hurt feelings; ordinary zero is peaceful rest.
+	game._show_brew_values(0, 0)
+	smoke.ingredient_delta(-1, game.self_panel.card_origin(), 2, 0)
+	assert(smoke.expression == &"sad")
+	await create_timer(1.9).timeout
+	assert(smoke.expression == &"sleepy")
+	# A real heat-for-smoke card uses the PRE-card value, even when it reduces smoke to zero.
+	game.heat = 0
+	game.smoke = 1
+	game._show_brew_values(0, 1)
+	game._resolve_reaction(AlchemyRules.resolve(0,1,game.cards[6]),6,game.active_player)
+	await create_timer(.1).timeout
+	assert(smoke.expression == &"disappointed" and smoke.face_pose == &"disappointed")
+	await create_timer(2.0).timeout
+	assert(smoke.expression == &"sleepy")
 	# Real overheat and burst paths must drive both rigs exactly once.
 	var before: Array[int] = game.hp.duplicate()
 	await game._resolve_reaction(AlchemyRules.resolve(5,2,game.cards[2]),2,game.active_player)
 	assert(game.hp[game.active_player] == before[game.active_player] - 3)
 	assert(launches == [1,1])
-	assert(heat.previous_value == 0 and heat.offended_time == 0 and smoke.expression == &"sad")
+	assert(heat.previous_value == 0 and heat.offended_time == 0 and smoke.expression == &"sleepy")
 	game.heat = 3
 	game.smoke = 2
 	game._show_brew_values(3,2)
@@ -50,5 +71,5 @@ func _run() -> void:
 	assert(game.hp[target] == target_hp - 4)
 	assert(launches == [2,2])
 	assert(heat.blast_state == &"" and smoke.blast_state == &"" and heat.offended_time == 0)
-	print('SPIRITS PASS: cooling zero, no repeat on refresh, smoke recovery, heat five, both blast paths and reset')
+	print('SPIRITS PASS: sly heat, sleeping smoke, empty-smoke hurt, heat/smoke trade disappointment, kind blast expressions, independent foliage, both damage paths')
 	quit()

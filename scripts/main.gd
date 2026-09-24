@@ -345,7 +345,7 @@ func _resolve_reaction(result: Dictionary, played_id: int, caster: int) -> void:
 	cauldron.react()
 	_show_brew_values(result.card_heat, result.card_smoke)
 	heat_meter.ingredient_delta(cards[played_id].heat, actors[caster].card_origin())
-	smoke_meter.ingredient_delta(cards[played_id].smoke, actors[caster].card_origin())
+	smoke_meter.ingredient_delta(cards[played_id].smoke, actors[caster].card_origin(), cards[played_id].heat, smoke)
 	await get_tree().create_timer(0.46).timeout
 	# Separate fire beat makes the automatic +1 visible instead of hiding it in the card effect.
 	guide_title.text = "Огонь добавляет +1 жар"

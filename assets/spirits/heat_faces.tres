@@ -1,14 +1,14 @@
 [gd_resource type="SpriteFrames" load_steps=8 format=3]
-[ext_resource type="Texture2D" path="res://assets/spirits/heat_expressions.png" id="1"]
-[sub_resource type="AtlasTexture" id="calm"]
+[ext_resource type="Texture2D" path="res://assets/spirits/heat_mischief.png" id="1"]
+[sub_resource type="AtlasTexture" id="sly"]
 atlas = ExtResource("1")
 region = Rect2(0, 100, 512, 400)
 filter_clip = true
-[sub_resource type="AtlasTexture" id="happy"]
+[sub_resource type="AtlasTexture" id="gloating"]
 atlas = ExtResource("1")
 region = Rect2(512, 100, 512, 400)
 filter_clip = true
-[sub_resource type="AtlasTexture" id="sad"]
+[sub_resource type="AtlasTexture" id="smug"]
 atlas = ExtResource("1")
 region = Rect2(1024, 100, 512, 400)
 filter_clip = true
@@ -27,21 +27,21 @@ filter_clip = true
 [resource]
 animations = [
 {
-"frames": [{"duration": 1.0, "texture": SubResource("calm")}],
+"frames": [{"duration": 1.0, "texture": SubResource("sly")}],
 "loop": true,
-"name": &"calm",
+"name": &"sly",
 "speed": 1.0
 },
 {
-"frames": [{"duration": 1.0, "texture": SubResource("happy")}],
+"frames": [{"duration": 1.0, "texture": SubResource("gloating")}],
 "loop": true,
-"name": &"happy",
+"name": &"gloating",
 "speed": 1.0
 },
 {
-"frames": [{"duration": 1.0, "texture": SubResource("sad")}],
+"frames": [{"duration": 1.0, "texture": SubResource("smug")}],
 "loop": true,
-"name": &"sad",
+"name": &"smug",
 "speed": 1.0
 },
 {

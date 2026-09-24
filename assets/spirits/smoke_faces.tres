@@ -1,6 +1,6 @@
 [gd_resource type="SpriteFrames" load_steps=8 format=3]
-[ext_resource type="Texture2D" path="res://assets/spirits/smoke_expressions.png" id="1"]
-[sub_resource type="AtlasTexture" id="calm"]
+[ext_resource type="Texture2D" path="res://assets/spirits/smoke_gentle.png" id="1"]
+[sub_resource type="AtlasTexture" id="sleepy"]
 atlas = ExtResource("1")
 region = Rect2(0, 100, 512, 400)
 filter_clip = true
@@ -12,24 +12,24 @@ filter_clip = true
 atlas = ExtResource("1")
 region = Rect2(1024, 100, 512, 400)
 filter_clip = true
-[sub_resource type="AtlasTexture" id="angry"]
+[sub_resource type="AtlasTexture" id="concerned"]
 atlas = ExtResource("1")
-region = Rect2(0, 552, 512, 400)
+region = Rect2(0, 520, 512, 400)
 filter_clip = true
-[sub_resource type="AtlasTexture" id="furious"]
+[sub_resource type="AtlasTexture" id="disappointed"]
 atlas = ExtResource("1")
-region = Rect2(512, 552, 512, 400)
+region = Rect2(512, 520, 512, 400)
 filter_clip = true
-[sub_resource type="AtlasTexture" id="release"]
+[sub_resource type="AtlasTexture" id="apologetic"]
 atlas = ExtResource("1")
-region = Rect2(1024, 552, 512, 400)
+region = Rect2(1024, 520, 512, 400)
 filter_clip = true
 [resource]
 animations = [
 {
-"frames": [{"duration": 1.0, "texture": SubResource("calm")}],
+"frames": [{"duration": 1.0, "texture": SubResource("sleepy")}],
 "loop": true,
-"name": &"calm",
+"name": &"sleepy",
 "speed": 1.0
 },
 {
@@ -45,21 +45,21 @@ animations = [
 "speed": 1.0
 },
 {
-"frames": [{"duration": 1.0, "texture": SubResource("angry")}],
+"frames": [{"duration": 1.0, "texture": SubResource("concerned")}],
 "loop": true,
-"name": &"angry",
+"name": &"concerned",
 "speed": 1.0
 },
 {
-"frames": [{"duration": 1.0, "texture": SubResource("furious")}],
+"frames": [{"duration": 1.0, "texture": SubResource("disappointed")}],
 "loop": true,
-"name": &"furious",
+"name": &"disappointed",
 "speed": 1.0
 },
 {
-"frames": [{"duration": 1.0, "texture": SubResource("release")}],
+"frames": [{"duration": 1.0, "texture": SubResource("apologetic")}],
 "loop": true,
-"name": &"release",
+"name": &"apologetic",
 "speed": 1.0
 }
 ]

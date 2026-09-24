@@ -12,6 +12,7 @@ const WISP := preload("res://assets/spirits/wisp.svg")
 @onready var motion: Node2D = $Motion
 @onready var visual: Node2D = $Motion/Visual
 @onready var icon: TextureRect = $Motion/Visual/Body
+@onready var foliage_material: ShaderMaterial = $Motion/Visual/Body.material
 @onready var value_label: Label = $Motion/Visual/Value
 @onready var caption: Label = $Caption
 @onready var threshold_label: Label = $Threshold
@@ -23,7 +24,9 @@ const WISP := preload("res://assets/spirits/wisp.svg")
 var previous_value := -1
 var heat_mode := true
 var idle_time := 0.0
-var expression: StringName = &"sleepy"
+var expression: StringName = &"sly"
+var reaction_expression: StringName = &""
+var foliage_energy := 1.0
 var leaf_origins: Array[Vector2] = []
 var leaf_angles: Array[float] = []
 var offended_time := 0.0
@@ -44,6 +47,7 @@ func configure(label_text: String, value: int, _threshold: int = 6, threshold_te
 	if previous_value < 0 or next_heat != heat_mode:
 		heat_mode = next_heat
 		icon.texture = HEAT_BODY if heat_mode else SMOKE_BODY
+		foliage_material.set_shader_parameter("heat_spirit", heat_mode)
 		base_face = Vector2(65, 72) if heat_mode else Vector2(52, 82)
 		face.position = base_face
 		artwork.sprite_frames = HEAT_FACES if heat_mode else SMOKE_FACES
@@ -66,39 +70,46 @@ func configure(label_text: String, value: int, _threshold: int = 6, threshold_te
 	threshold_label.add_theme_color_override("font_color", Color("953d2c") if heat_mode else Color("245e68"))
 	value_label.text = str(value)
 	if previous_value >= 0 and value > previous_value and blast_state == &"":
-		_bounce(Vector2(0.94, 1.06), 0.30)
+		_bounce(Vector2(0.988, 1.015), 0.30)
 	previous_value = value
 	_update_expression()
 
-func ingredient_delta(delta_value: int, player_position: Vector2) -> void:
-	# Intent matters: an attempt to cool zero heat still offends the ember spirit.
-	if delta_value < 0:
-		offended_time = 1.8
-		var spirit_center := get_global_transform() * Vector2(56, 73)
-		look_direction = clampf((player_position.x - spirit_center.x) / 90.0, -1.0, 1.0)
-		_bounce(Vector2(1.07, 0.92), 0.30)
-		_update_expression()
+func ingredient_delta(delta_value: int, player_position: Vector2, other_delta: int = 0, before_value: int = -1) -> void:
+	if delta_value >= 0: return
+	# Use the pre-card value: reducing smoke TO zero is different from taking FROM zero.
+	var source_value := previous_value if before_value < 0 else before_value
+	offended_time = 1.8
+	if heat_mode:
+		reaction_expression = &"angry"
+	elif source_value == 0:
+		reaction_expression = &"sad"
+	elif other_delta > 0:
+		reaction_expression = &"disappointed"
+	else:
+		reaction_expression = &"concerned"
+	var spirit_center := get_global_transform() * Vector2(56, 73)
+	look_direction = clampf((player_position.x - spirit_center.x) / 90.0, -1.0, 1.0)
+	_bounce(Vector2(1.02, 0.985), 0.30)
+	_update_expression()
 
 func _update_expression() -> void:
 	if blast_state != &"":
 		expression = blast_state
 	elif offended_time > 0:
-		expression = &"angry" if heat_mode else &"sad"
-	elif heat_mode and previous_value >= 5:
-		expression = &"furious"
-	elif previous_value == 0:
-		expression = &"sleepy" if heat_mode else &"sad"
+		expression = reaction_expression
+	elif heat_mode:
+		if previous_value >= 5: expression = &"furious"
+		elif previous_value >= 2: expression = &"gloating"
+		else: expression = &"sly"
 	else:
-		expression = &"happy" if (previous_value >= 2 or not heat_mode) else &"calm"
-
+		expression = &"sleepy" if previous_value == 0 else &"happy"
 	_show_expression_art()
 
 func _show_expression_art() -> void:
 	# The expression is a complete illustrated paper face, never geometry over the art.
 	var pose := expression
-	if pose == &"sleepy": pose = &"calm"
-	elif pose == &"charge": pose = &"furious"
-	elif pose == &"explode": pose = &"release"
+	if pose == &"charge": pose = &"furious" if heat_mode else &"concerned"
+	elif pose == &"explode" or pose == &"release": pose = &"release" if heat_mode else &"apologetic"
 	if pose == face_pose: return
 	face_pose = pose
 	artwork.animation = pose
@@ -113,13 +124,19 @@ func _process(delta: float) -> void:
 	_update_expression()
 	var furious := expression == &"furious"
 	var angry := expression == &"angry"
-	var sad := expression == &"sad" or expression == &"sleepy"
+	var sad := expression == &"sad" or expression == &"disappointed"
+	var resting := expression == &"sleepy"
 	var releasing := expression == &"release" or expression == &"explode"
-	var intensity := 3.0 if furious else (1.9 if angry or releasing else 1.0)
-	var rhythm := 1.6 if heat_mode else 1.05
-	visual.position = Vector2(-56, -145) + Vector2(0, sin(idle_time * rhythm) * (1.0 if heat_mode else 2.0))
-	visual.rotation = (look_direction * 0.045 if angry else 0.0) + sin(idle_time * (19.0 if furious else rhythm)) * (0.032 if furious else 0.012)
-	face.position = base_face + Vector2(0, sin(idle_time * rhythm + 0.2) * 0.5)
+	var intensity := 2.0 if furious else (1.45 if angry or releasing else 1.0)
+	var rhythm := 1.8 if heat_mode else (0.85 if resting else 1.05)
+	# Feet remain planted; the shader flexes individual leaf/wisp clusters instead.
+	visual.position = Vector2(-56, -157) + Vector2(0, sin(idle_time * rhythm) * (0.10 if heat_mode else 0.18))
+	visual.rotation = sin(idle_time * rhythm) * (0.0008 if heat_mode else 0.0012)
+	var desired_energy := intensity if heat_mode else (0.65 if resting else 1.0 + (intensity - 1.0) * 0.4)
+	foliage_energy = lerpf(foliage_energy, desired_energy, 1.0 - exp(-delta * 5.0))
+	foliage_material.set_shader_parameter("clock", idle_time)
+	foliage_material.set_shader_parameter("liveliness", foliage_energy)
+	face.position = base_face + Vector2(0, sin(idle_time * rhythm + 0.2) * (0.16 if heat_mode else 0.24))
 	face.rotation = lerp_angle(face.rotation, (0.13 if heat_mode else -0.10) + (-0.025 if sad else (look_direction * 0.04 if angry else sin(idle_time * 1.1) * 0.02)), 1 - exp(-delta * 8))
 	fist.visible = heat_mode and (angry or furious)
 	if fist.visible:
@@ -129,10 +146,12 @@ func _process(delta: float) -> void:
 		fist.rotation = side * (0.18 + sin(idle_time * (17 if furious else 12)) * 0.18)
 	for i in range(leaves.get_child_count()):
 		var leaf := leaves.get_child(i) as Sprite2D
-		var phase := idle_time * (1.2 + i * 0.09) * (2.2 if furious else 1.0) + i * 1.8
-		leaf.position = leaf_origins[i] + Vector2(sin(phase * 0.8) * 2.3, sin(phase) * 3.0) * intensity
-		leaf.rotation = leaf_angles[i] + sin(phase * 0.75) * 0.22 * intensity
-		leaf.scale.x = absf(leaf.scale.y) * (0.78 + sin(phase * 0.65) * 0.20)
+		var speed := (1.65 + i * 0.12) if heat_mode else (0.75 + i * 0.07)
+		var phase := idle_time * speed * (1.35 if furious and heat_mode else 1.0) + i * 1.8
+		var drift := Vector2(1.2, 1.8) if heat_mode else Vector2(1.8, 2.8)
+		leaf.position = leaf_origins[i] + Vector2(sin(phase * 0.8), sin(phase)) * drift * intensity
+		leaf.rotation = leaf_angles[i] + sin(phase * 0.75) * (0.12 if heat_mode else 0.16) * intensity
+		leaf.scale.x = absf(leaf.scale.y) * (0.88 + sin(phase * 0.65) * 0.10)
 
 func _bounce(stretch: Vector2, duration: float) -> void:
 	if pulse and pulse.is_running(): pulse.kill()
@@ -143,20 +162,22 @@ func _bounce(stretch: Vector2, duration: float) -> void:
 func prepare_blast(overheat: bool) -> void:
 	offended_time = 0.0
 	blast_state = &"charge"
+	_update_expression()
 	if pulse and pulse.is_running(): pulse.kill()
 	pulse = create_tween()
-	pulse.tween_property(motion, "scale", Vector2(1.10, 0.86) if overheat else Vector2(0.92, 1.07), 0.30).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	pulse.tween_property(motion, "scale", Vector2(1.035, 0.97) if overheat else Vector2(0.985, 1.025), 0.30).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 func release_blast(overheat: bool) -> void:
 	blast_released.emit(overheat)
 	blast_state = &"explode" if overheat else &"release"
+	_update_expression()
 	puffs.amount = 15 if overheat else 9
 	puffs.restart()
 	puffs.emitting = true
 	if pulse and pulse.is_running(): pulse.kill()
 	pulse = create_tween().set_parallel(true)
-	pulse.tween_property(motion, "scale", Vector2(1.15, 0.82) if not overheat else Vector2(0.86, 1.17), 0.10)
-	pulse.tween_property(motion, "rotation", -0.13 if heat_mode else 0.13, 0.10)
+	pulse.tween_property(motion, "scale", Vector2(1.04, 0.965) if not overheat else Vector2(0.97, 1.045), 0.10)
+	pulse.tween_property(motion, "rotation", -0.025 if heat_mode else 0.025, 0.10)
 	pulse.chain().tween_property(motion, "scale", Vector2.ONE, 0.46).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	pulse.parallel().tween_property(motion, "rotation", 0.0, 0.46)
 
